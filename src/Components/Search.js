@@ -7,6 +7,7 @@ import Spinner from './Spinner';
 
 import Genre from '../Data/Genre';
 import Order from '../Data/Order';
+import MediaType from '../Data/MediaType';
 import Quality from '../Data/Quality';
 
 class Search extends Component {
