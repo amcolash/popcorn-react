@@ -1,5 +1,5 @@
-# yify-react
-A simple react app that shows info from the yify api.
+# popcorn-react
+A simple react app that shows info from the popcorn api.
 
 Please know that this was a test of using real life apis. Don't pirate movies.
 
