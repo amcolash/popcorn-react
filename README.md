@@ -10,8 +10,8 @@ Please know that this was a test of using real life apis. Don't pirate movies.
 ### Server
 There is not a specific way to actually host the server. You can host the `/build` folder with something like nginx. Since the project is static (only does CRUD), any http server will do.
 ```
-git clone https://github.com/amcolash/yify-react.git
-cd yify-react
+git clone https://github.com/amcolash/popcorn-react.git
+cd popcorn-react
 npm install
 npm run build
 ```
