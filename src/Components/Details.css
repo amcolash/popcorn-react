@@ -1,0 +1,52 @@
+.container {
+    margin-top: 24px;
+}
+
+.left, .right {
+    display: inline-block;
+    color: #555;
+}
+
+.right {
+    vertical-align: top;
+    max-width: 65%;
+    padding-left: 1em;
+}
+
+a {
+    color: #999;
+}
+
+h3 {
+    margin: 0.25em 0.5em;
+}
+
+h4 {
+    margin: 0;
+}
+
+.mpaa-rating {
+    display: inline-block;
+    padding: 0.1em;
+    margin-left: 0.5em;
+    border: 2px solid black;
+    border-radius: 0;
+    font-family: Times New Roman;
+    font-weight: bold;
+}
+
+.status {
+    stroke-width: 1px;
+    stroke: black;
+    padding-right: 0.15em;
+}
+
+.download {
+    font-weight: bolder;
+}
+
+@media (max-width: 680px) {
+    .right {
+        max-width: 100%;
+    }
+}
