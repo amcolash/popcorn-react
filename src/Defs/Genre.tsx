@@ -1,7 +1,20 @@
 import { Type } from './Type';
 
 export default class Genre {
-    private readonly GenreAnime: string[] = [
+
+    public static getDefaultGenre(type: Type): string {
+        return this.getGenres(type)[0];
+    }
+
+    public static getGenres(type: Type): string[] {
+        switch (type) {
+            case Type.Anime: return this.GenreAnime;
+            default: return this.GenreTVMovie;
+        }
+    }
+
+    private static readonly GenreAnime: string[] = [
+        'All',
         'Action',
         'Adventure',
         'Comedy',
@@ -45,7 +58,7 @@ export default class Genre {
         'Yuri',
     ];
 
-    private readonly GenreTVMovie: string[] = [
+    private static readonly GenreTVMovie: string[] = [
         'All',
         'Action',
         'Adventure',
@@ -79,11 +92,4 @@ export default class Genre {
         'War',
         'Western'
     ];
-
-    public getGenres(type: Type): string[] {
-        switch (type) {
-            case Type.Anime: return this.GenreAnime;
-            default: return this.GenreTVMovie;
-        }
-    }
 }

@@ -2,9 +2,9 @@ import * as React from 'react';
 import './Spinner.css';
 
 interface ISpinnerProps {
-    visible: boolean
-    noMargin: boolean
-    button: boolean
+    visible?: boolean
+    noMargin?: boolean
+    button?: boolean
 }
 
 class Spinner extends React.Component<ISpinnerProps, {}> {
