@@ -11,9 +11,9 @@ export default class Query {
 
     private readonly ENDPOINT : string = "https://tv-v2.api-fetch.website/";
 
-    constructor(keywords : string) {
+    constructor(keywords ? : string) {
         this.reset();
-        this.keywords = keywords;
+        this.keywords = keywords || this.keywords;
     }
 
     public constructQuery() : string {

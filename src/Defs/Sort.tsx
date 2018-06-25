@@ -2,11 +2,11 @@ import { Type } from './Type';
 
 export default class Sort {
 
-    public static getDefaultSort(type: Type): string {
+    public static getDefaultSort(type : Type) : string {
         return this.getSort(type)[0];
     }
 
-    public static getSort(type: Type): string[] {
+    public static getSort(type : Type) : string[] {
         switch (type) {
             case Type.Anime: return this.SortAnime;
             case Type.Movie: return this.SortMovie;
@@ -14,13 +14,13 @@ export default class Sort {
         }
     }
 
-    private static readonly SortAnime:string[] = [
+    private static readonly SortAnime : string[] = [
         'Name',
         'Year',
         'Rating',
     ];
 
-    private static readonly SortMovie:string[] = [
+    private static readonly SortMovie : string[] = [
         'Date Added',
         'Trending',
         'Title',
@@ -28,7 +28,7 @@ export default class Sort {
         'Rating',
     ];
 
-    private static readonly SortTV:string[] = [
+    private static readonly SortTV : string[] = [
         'Updated',
         'Trending',
         'Name',
