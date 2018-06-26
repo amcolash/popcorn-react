@@ -1,5 +1,5 @@
-import React from 'react';
 import axios from 'axios';
+import * as React from 'react';
 import Modal from 'react-responsive-modal';
 import { FaAngleDoubleRight, FaAngleDoubleLeft, FaAngleRight, FaAngleLeft, FaClose, FaExclamationTriangle } from 'react-icons/fa';
 
@@ -11,7 +11,7 @@ import Details from './Details';
 import TorrentList from './TorrentList';
 import Search from './Search';
 
-class MovieList extends Component {
+class MovieList extends React.Component {
 
     constructor(props) {
         super(props);

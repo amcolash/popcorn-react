@@ -1,13 +1,13 @@
-import React from 'react';
-import { FaDownload, FaCircle, FaPlayCircle } from 'react-icons/fa';
 import axios from 'axios';
+import * as React from 'react';
+import { FaDownload, FaCircle, FaPlayCircle } from 'react-icons/fa';
 
 import keys from '../keys';
 import './Details.css';
 import Progress from './Progress';
 import Spinner from './Spinner';
 
-class Details extends Component {
+class Details extends React.Component {
 
     constructor(props) {
         super(props);

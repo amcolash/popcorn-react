@@ -1,37 +1,39 @@
-import React from 'react';
+import * as React from 'react';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 
+import Query from '../Defs/Query';
+import Torrent from '../Defs/Torrent';
 import Progress from './Progress';
 
-class TorrentList extends Component {
-    constructor(props) {
+interface ITorrentListProps {
+    getLink : ((query : Query) => string);
+    cancelTorrent : ((torrent : Torrent) => void);
+    torrents : Torrent[];
+}
+
+interface ITorrentListState {
+    collapsed : boolean;
+}
+
+class TorrentList extends React.Component<ITorrentListProps, ITorrentListState> {
+    constructor(props : ITorrentListProps) {
         super(props);
 
         this.state = { collapsed: true };
     }
 
-    expand() {
-        this.setState({ collapsed: false });
-    }
-
-    collapse() {
-        this.setState({ collapsed: true });
-    }
-
-    toggleCollapse() {
-        this.setState({ collapsed: !this.state.collapsed });
-    }
-
-    render() {
+    public render() {
         const { getLink, cancelTorrent, torrents } = this.props;
 
-        if (torrents.length === 0) return null;
+        if (torrents.length === 0) {
+            return null;
+        }
 
         return (
             <div className="torrentList">
                 <h3>
                     <span>Downloads ({torrents.length})</span>
-                    <button onClick={ () => this.toggleCollapse() }>
+                    <button onClick={this.toggleCollapse}>
                         {this.state.collapsed ? <FaPlus/> : <FaMinus/>}
                     </button>
                 </h3>
@@ -52,6 +54,18 @@ class TorrentList extends Component {
                 <hr/>
             </div>
         );
+    }
+
+    private expand() {
+        this.setState({ collapsed: false });
+    }
+
+    private collapse() {
+        this.setState({ collapsed: true });
+    }
+
+    private toggleCollapse() {
+        this.setState({ collapsed: !this.state.collapsed });
     }
 }
 

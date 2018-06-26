@@ -1,7 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 import { FaTrash, FaPlay, FaExclamationCircle } from 'react-icons/fa';
 
-class Progress extends Component {
+class Progress extends React.Component {
     
     render() {
         const { torrent, getLink, cancelTorrent, fullName } = this.props;

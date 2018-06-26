@@ -1,4 +1,4 @@
-export class Movie {
+export default class Movie {
     public title : string;
     public description : string;
     public year : number;

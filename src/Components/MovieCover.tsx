@@ -1,9 +1,9 @@
-import React from 'react';
+import * as React from 'react';
 import { FaDownload, FaTrash } from 'react-icons/fa';
 import './Movie.css';
 import Spinner from './Spinner';
 
-class Movie extends Component {
+class Movie extends React.Component {
     render() {
         const { click, movie, downloadTorrent, cancelTorrent, getVersions, getProgress, started } = this.props;
         const versions = getVersions(movie);
