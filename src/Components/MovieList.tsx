@@ -4,12 +4,14 @@ import Modal from 'react-responsive-modal';
 import { FaAngleDoubleRight, FaAngleDoubleLeft, FaAngleRight, FaAngleLeft, FaClose, FaExclamationTriangle } from 'react-icons/fa';
 
 import './MovieList.css';
+
 import keys from '../keys';
-import Movie from './MovieCover';
-import Spinner from './Spinner';
+
 import Details from './Details';
-import TorrentList from './TorrentList';
+import Movie from './MovieCover';
 import Search from './Search';
+import Spinner from './Spinner';
+import TorrentList from './TorrentList';
 
 class MovieList extends React.Component {
 

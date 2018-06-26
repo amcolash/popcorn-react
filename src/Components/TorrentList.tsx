@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 
-import Query from '../Defs/Query';
 import Torrent from '../Defs/Torrent';
+
 import Progress from './Progress';
 
 interface ITorrentListProps {
-    getLink : ((query : Query) => string);
+    getLink : ((torrent : Torrent) => string);
     cancelTorrent : ((torrent : Torrent) => void);
     torrents : Torrent[];
 }
