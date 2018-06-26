@@ -18,17 +18,17 @@ export default class Query {
 
     public constructQuery() : string {
         let url : string = this.ENDPOINT;
-        url += Type[this.type] + "/";
+        url += this.type + "/";
         url += this.page + "?";
-        url += "keywords=" + this.keywords + "&";
-        url += "sort=" + this.sort + "&";
-        url += "order=" + ((this.sort === "Name" || this.sort === "Title") ? "Ascending" : "Descending") + "&";
+        url += "keywords=" + this.keywords;
+        url += "&sort=" + this.sort;
+        url += "&order=" + ((this.sort === "Name" || this.sort === "Title") ? "-1" : "1");
 
         if (this.genre !== "All") {
-            url += "genre=" + this.genre + "&";
+            url += "&genre=" + this.genre;
         }
 
-        return url;
+        return encodeURI(url);
     }
 
     public reset() {
