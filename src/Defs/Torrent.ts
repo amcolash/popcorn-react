@@ -6,4 +6,5 @@ export default class Torrent {
     public stats : any;
     public speed : any;
     public progress : any;
+    public files : any[];
 }

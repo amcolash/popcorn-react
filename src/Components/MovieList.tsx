@@ -1,11 +1,11 @@
-import axios from 'axios';
 import * as React from 'react';
 import Modal from 'react-responsive-modal';
 import { FaAngleDoubleRight, FaAngleDoubleLeft, FaAngleRight, FaAngleLeft, FaClose, FaExclamationTriangle } from 'react-icons/fa';
 
 import './MovieList.css';
 
-import keys from '../keys';
+import PeerflixServer from '../Util/PeerflixServer';
+import Popcorn from '../Util/Popcorn';
 
 import Details from './Details';
 import Movie from './MovieCover';
@@ -19,7 +19,6 @@ class MovieList extends React.Component {
         super(props);
 
         this.state = {
-            error: null,
             isLoaded: false,
             movies: [],
             totalMovies: 0,
@@ -27,24 +26,16 @@ class MovieList extends React.Component {
             totalPages: 1,
             modal: false,
             movie: {},
-            torrents: [],
-            started: [],
             search: '',
             genre: '',
             quality: 'All',
             order: 'date_added',
             isSearching: false,
-            storage: null,
             width: 0,
             height: 0
         }
 
-        this.updateSearch = this.updateSearch.bind(this);
-        this.getTorrent = this.getTorrent.bind(this);
-        this.getProgress = this.getProgress.bind(this);
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-
-        this.server = "http://" + window.location.hostname + ":9000";
     }
     
     componentDidMount() {
@@ -68,196 +59,6 @@ class MovieList extends React.Component {
         this.setState({ width: window.innerWidth, height: window.innerHeight });
     }
 
-    updateLocation() {
-        // If the server is not patched or something goes wrong, no worries
-        axios.get(this.server + '/ip').then(ip => {
-            axios.get('https://api.ipdata.co/' + ip.data + "?api-key=" + keys.ipdata).then(response => {
-                this.setState({ location: response.data.city + ', ' + response.data.country_name });
-            }, error => {
-                console.error(error);
-            });
-        }, error => {
-            console.error(error);
-        });
-    }
-
-    updateTorrents() {
-        axios.get(this.server + '/torrents').then(response => {
-            const torrents = response.data;
-            const started = this.state.started.filter(infoHash => {
-                for (var i = 0; i < torrents.length; i++) {
-                    if (torrents[i].infoHash === infoHash) return false;
-                }
-                return true;
-            });
-
-            for (var i = 0; i < torrents.length; i++) {
-                const torrent = torrents[i];
-                if (torrent.progress && torrent.progress[0] === 100 && !torrent.halted) {
-                    console.log("stopping complete torrent: " + torrent.infoHash);
-                    axios.post(this.server + '/torrents/' + torrent.infoHash + '/halt').then(response => {
-                        this.updateTorrents();
-                    }, error => {
-                        console.error(error);
-                    });
-                }
-            }
-
-            this.setState({
-                torrents: torrents,
-                started: started
-            });
-        }, error => {
-            console.error(error);
-        });
-
-        // Additionally get storage info here
-        axios.get(this.server + '/storage').then(response => {
-            this.setState({storage: response.data.used});
-        }, error => {
-            console.error(error);
-        });
-    }
-
-    updateSearch(search, genre, order, quality) {
-        this.setState({
-            search: search,
-            genre: genre,
-            order: order,
-            quality: quality,
-            page: 1,
-        }, () => this.updateData());
-    }
-    
-    updateData() {
-        const { search, page, genre, order, quality } = this.state;
-        
-        this.setState({
-            isSearching: true
-        });
-
-        const limit = 20;
-        const direction = order === 'title' ? 'asc' : 'dec';
-        const params = 'limit=' + limit + '&page=' + page +
-            (search.length > 0 ? '&query_term=' + search : '') +
-            '&sort_by=' + order + '&order_by=' + direction +
-            (genre.length > 0 ? '&genre=' + genre : '') +
-            '&quality=' + quality;
-        const ENDPOINT = 'https://yts.am/api/v2/list_movies.json?' + params;
-
-        axios.get(ENDPOINT).then(response => {
-            const data = response.data.data;
-            const total = data.movie_count;
-            const totalPages = Math.ceil(total / limit);
-
-            this.setState({
-                movies: data.movies,
-                isLoaded: true,
-                isSearching: false,
-                totalPages: totalPages,
-                totalMovies: total
-            });
-        }, error => {
-            this.setState({
-                error: error,
-                isLoaded: true,
-                isSearching: false,
-            });
-        });
-    }
-
-    cancelTorrent = (infoHash) => {
-        axios.delete(this.server + '/torrents/' + infoHash).then(response => {
-            this.updateTorrents();
-        }, error => {
-            console.error(error);
-        });
-    }
-
-    stopTorrent = (infoHash) => {
-        axios.post(this.server + '/torrents/' + infoHash + '/stop').then(response => {
-            this.updateTorrents();
-        }, error => {
-            console.error(error);
-        });
-    }
-
-    downloadTorrent = (version) => {
-        this.setState({
-            started: [ ...this.state.started, version.infoHash ]
-        });
-
-        axios.post(this.server + '/torrents', { link: version.url }).then(response => {
-            this.updateTorrents();
-        }, error => {
-            console.error(error);
-        });
-
-        this.torrentList.expand();
-    }
-
-    getVersions(movie) {
-        var versions = {};
-
-        if (movie.torrents) {
-            for (var i = 0; i < movie.torrents.length; i++) {
-                const torrent = movie.torrents[i];
-
-                let version = {
-                    quality: torrent.quality,
-                    peers: torrent.peers.toFixed(0),
-                    seeds: torrent.seeds.toFixed(0),
-                    ratio: torrent.peers > 0 ? (torrent.seeds / torrent.peers).toFixed(3) : 0,
-                    url: torrent.url,
-                    infoHash: torrent.hash.toLowerCase(),
-                    size: torrent.size
-                };
-
-                if (!versions[version.quality] || versions[version.quality].ratio < version.ratio) {
-                    versions[version.quality] = version;
-                }
-            }
-        }
-
-        return Object.values(versions);
-    }
-
-    getTorrent(infoHash) {
-        for (var i = 0; i < this.state.torrents.length; i++) {
-            const torrent = this.state.torrents[i];
-            if (torrent.infoHash === infoHash) return torrent;
-        }
-
-        return null;
-    }
-
-    getProgress(infoHash) {
-        const torrent = this.getTorrent(infoHash);
-        return (torrent !== null && torrent.progress && torrent.progress[0]) ? torrent.progress[0] + 0.001 : null;
-    }
-
-    getLink = (infoHash) => {
-        const { torrents } = this.state;
-
-        for (var i = 0; i < torrents.length; i++) {
-            const torrent = torrents[i];
-            if (torrent.infoHash === infoHash) {
-                var largestSize = 0;
-                var largestIndex = 0;
-
-                for (var j = 0; j < torrent.files.length; j++) {
-                    const file = torrent.files[j];
-                    if (file.length > largestSize) {
-                        largestIndex = j;
-                        largestSize = file.length;
-                    }
-                }
-
-                return this.server + torrent.files[largestIndex].link;
-            }
-        }
-    }
-
     onOpenModal = (movie) => {
         this.setState({ movie: movie, modal: true });
     };
@@ -266,47 +67,22 @@ class MovieList extends React.Component {
         this.setState({ modal: false });
     };
 
-    changePage(direction) {
-        const { page, totalPages } = this.state;
-        var newPage = direction + page;
-        if (page === newPage) return;
-        if (newPage < 1) newPage = 1;
-        if (newPage > totalPages) newPage = totalPages;
-
-        this.setState({ page: newPage }, () => this.updateData());
-    }
-
     render() {
-        const {
-            error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching, genre, order, quality, location,
-            totalMovies, started, width, storage
-        } = this.state;
+        const { isLoaded, movies, modal, movie, page, totalPages, totalMovies, width } = this.state;
 
-        if (error) {
-            return <div className="message">Error: {error.message}</div>;
-        } else if (!isLoaded) {
+        if (!isLoaded) {
             return (
             <div className="message">
                 <span>Loading...</span>
-                <Spinner visible/>
+                <Spinner visible={true}/>
             </div>
             );
         } else {
             return (
-                <Fragment>
+                <React.Fragment>
                     <Modal open={modal} onClose={this.onCloseModal} center={width > 800}>
                         <Details
                             movie={movie}
-                            server={this.server}
-                            torrents={torrents}
-                            started={started}
-                            updateTorrents={this.updateTorrents}
-                            cancelTorrent={this.cancelTorrent}
-                            downloadTorrent={this.downloadTorrent}
-                            getLink={this.getLink}
-                            getProgress={this.getProgress}
-                            getTorrent={this.getTorrent}
-                            getVersions={this.getVersions}
                         />
                     </Modal>
             
@@ -317,22 +93,9 @@ class MovieList extends React.Component {
                         </span>
                     ) : null}
 
-                    <TorrentList
-                        torrents={torrents}
-                        cancelTorrent={this.cancelTorrent}
-                        getLink={this.getLink}
-                        ref={instance => { this.torrentList = instance; }}
-                    />
+                    <TorrentList />
 
-                    <Search
-                        updateSearch={this.updateSearch}
-                        isSearching={this.state.isSearching}
-                        search={this.state.search}
-                        genre={this.state.genre}
-                        quality={this.state.quality}
-                        order={this.state.order}
-                        page={this.state.page}
-                    />
+                    <Search />
 
                     <h2>{totalMovies} Movies</h2>
 
@@ -344,12 +107,6 @@ class MovieList extends React.Component {
                                         key={movie.id}
                                         movie={movie}
                                         click={this.onOpenModal}
-                                        downloadTorrent={this.downloadTorrent}
-                                        cancelTorrent={this.cancelTorrent}
-                                        torrents={this.torrents}
-                                        started={started}
-                                        getProgress={this.getProgress}
-                                        getVersions={this.getVersions}
                                     />
                                 ) : null
                             ))
@@ -363,49 +120,49 @@ class MovieList extends React.Component {
                             <FaAngleDoubleLeft
                                 className="arrow"
                                 style={{ visibility: page > 1 ? "visible" : "hidden" }}
-                                onClick={() => this.changePage(-5)}
+                                onClick={() => Popcorn.changePage(-5)}
                             />
                             <FaAngleLeft
                                 className="arrow"
                                 style={{ visibility: page > 1 ? "visible" : "hidden" }}
-                                onClick={() => this.changePage(-1)}
+                                onClick={() => Popcorn.changePage(-1)}
                             />
                             <span>{page}</span>
                             <FaAngleRight
                                 className="arrow"
                                 style={{ visibility: page < totalPages ? "visible" : "hidden" }}
-                                onClick={() => this.changePage(1)}
+                                onClick={() => Popcorn.changePage(1)}
                             />
                             <FaAngleDoubleRight
                                 className="arrow"
                                 style={{ visibility: page < totalPages ? "visible" : "hidden" }}
-                                onClick={() => this.changePage(5)}
+                                onClick={() => Popcorn.changePage(5)}
                             />
 
                             <br/>
                             
-                            <Spinner visible={isSearching} noMargin />
+                            <Spinner visible={Popcorn.isSearching} noMargin />
 
                             <div className="footer">
                                 {location ? (
-                                    <Fragment>
+                                    <React.Fragment>
                                         <br/>
                                         <br/>
                                         <span className="location">Server Location: {location}</span>
-                                    </Fragment>
+                                    </React.Fragment>
                                 ) : null}
                                 <br/>
                                 <br/>
-                                {storage ? (
-                                    <Fragment>
-                                        <span>Disk Usage: {storage}%</span>
-                                        <progress value={storage} max="100"/>
-                                    </Fragment>
+                                {PeerflixServer.storage ? (
+                                    <React.Fragment>
+                                        <span>Disk Usage: {PeerflixServer.storage}%</span>
+                                        <progress value={PeerflixServer.storage} max="100"/>
+                                    </React.Fragment>
                                 ) : null}
                             </div>
                         </div>
                     ) : null}
-                </Fragment>
+                </React.Fragment>
             );
         }
     }

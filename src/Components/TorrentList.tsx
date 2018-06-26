@@ -56,14 +56,6 @@ class TorrentList extends React.Component<ITorrentListProps, ITorrentListState> 
         );
     }
 
-    private expand() {
-        this.setState({ collapsed: false });
-    }
-
-    private collapse() {
-        this.setState({ collapsed: true });
-    }
-
     private toggleCollapse() {
         this.setState({ collapsed: !this.state.collapsed });
     }

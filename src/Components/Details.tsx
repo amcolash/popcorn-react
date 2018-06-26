@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as React from 'react';
 import { FaDownload, FaCircle, FaPlayCircle } from 'react-icons/fa';
 
-import keys from '../keys';
+import keys from '../Util/Keys';
 
 import Movie from '../Defs/Movie';
 import Version from '../Defs/Version';
