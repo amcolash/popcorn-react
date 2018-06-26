@@ -5,23 +5,20 @@ export default class Movie {
     public title : string;
     public description : string;
     public year : number;
+    public duration : number;
+    public mpaa : string;
     public imdb : string;
     public cover : string;
+    public genres : string[];
     public versions : Version[];
 
     constructor(data : any) {
         // TODO: Use real data here
-        this.title = data.title;
-        this.description = data.description;
-        this.year = data.year;
-        this.imdb = data.imdb;
-        this.cover = data.cover;
-        this.versions = [];
 
         if (data.torrents) {
             for (let torrentInfo of data.torrents) {
-
                 const version = new Version();
+
                 version.quality = torrentInfo.quality;
                 version.peers = parseFloat(torrentInfo.peers.toFixed(0));
                 version.seeds = parseFloat(torrentInfo.seeds.toFixed(0));
@@ -35,5 +32,12 @@ export default class Movie {
                 }
             }
         }
+    }
+
+    private convertTime(min: number): string {
+        const hours = Math.floor(min / 60);
+        const minutes = Math.floor(((min / 60) - hours) * 60);
+
+        return (hours > 0 ? hours + "h " : "") + (minutes > 0 ? minutes + "m" : "");
     }
 }
