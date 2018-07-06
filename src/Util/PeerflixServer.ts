@@ -6,7 +6,7 @@ import Torrent from '../Defs/Torrent';
 import Version from '../Defs/Version';
 
 export default class PeerflixServer {
-    // TODO: Finsih this up
+    // TODO: Finish this up
     public static torrents : Torrent[];
     public static started : string[];
     public static storage : string;
@@ -18,7 +18,7 @@ export default class PeerflixServer {
         axios.get(this.server + '/torrents').then(response => {
             const torrents = response.data;
             this.started = this.started.filter(infoHash => {
-                for (let torrent of torrents) {
+                for (const torrent of torrents) {
                     if (torrent.infoHash === infoHash) {
                         return false;
                     }
@@ -29,7 +29,7 @@ export default class PeerflixServer {
             for (const torrent of torrents) {
                 if (torrent.progress && torrent.progress[0] === 100 && !torrent.halted) {
                     console.log("stopping complete torrent: " + torrent.infoHash);
-                    axios.post(this.server + '/torrents/' + torrent.infoHash + '/halt').then(response => {
+                    axios.post(this.server + '/torrents/' + torrent.infoHash + '/halt').then(() => {
                         this.updateTorrents();
                     }, error => {
                         console.error(error);

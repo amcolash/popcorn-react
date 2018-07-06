@@ -11,16 +11,13 @@ export default class Query {
     public isSearching : boolean;
     // public updateData: ((torrent: Torrent) => string);
 
-    private readonly ENDPOINT : string = "https://tv-v2.api-fetch.website/";
-
     constructor(keywords ? : string) {
         this.reset();
         this.keywords = keywords || this.keywords;
     }
 
     public constructQuery() : string {
-        let url : string = this.ENDPOINT;
-        url += this.type + "/";
+        let url = this.type + "/";
         url += this.page + "?";
         url += "keywords=" + this.keywords;
         url += "&sort=" + this.sort;
