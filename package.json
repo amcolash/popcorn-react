@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/react-icons": "^2.2.5",
     "axios": "^0.18.0",
     "react": "^16.4.1",
     "react-debounce-input": "^3.2.0",
@@ -21,6 +20,7 @@
     "@types/node": "^10.3.5",
     "@types/react": "^16.4.1",
     "@types/react-dom": "^16.0.6",
+    "@types/react-icons": "^2.2.5",
     "typescript": "^2.9.2"
   }
 }

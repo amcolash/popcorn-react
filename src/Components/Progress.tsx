@@ -2,23 +2,24 @@ import * as React from 'react';
 import { FaTrash, FaPlay, FaExclamationCircle } from 'react-icons/fa';
 
 import Torrent from '../Defs/Torrent';
+import PeerflixServer from '../Util/PeerflixServer';
 
 interface IProgressProps {
-    torrent : Torrent;
+    torrent : Torrent | null;
     fullName : boolean;
-    getLink : ((torrent : Torrent) => string);
-    cancelTorrent : ((torrent : Torrent) => void);
 }
 
 class Progress extends React.Component<IProgressProps, {}> {
     
     public render() {
-        const { torrent, getLink, cancelTorrent, fullName } = this.props;
+        const { torrent, fullName } = this.props;
+        if (torrent == null) return null;
+
         const type = torrent.name.indexOf("720") !== -1 ? "720p" : (torrent.name.indexOf("1080") !== -1 ? "1080p" : (torrent.name.indexOf("3D") !== -1 ? "3D" : null));
         const name = (fullName || torrent.name.indexOf(")") === -1) ? torrent.name : torrent.name.substring(0, torrent.name.indexOf(")") + 1) + (type ? " [" + type + "]" : "");
         const speed : number = torrent.stats ? parseFloat((torrent.stats.speed.down / 1000000).toFixed(2)) : -1;
         const progress : number = parseFloat(torrent.progress[0].toFixed(0));
-        const link = getLink(torrent);
+        const link = PeerflixServer.getLink(torrent);
 
         const data = {
             title: name,
@@ -43,7 +44,7 @@ class Progress extends React.Component<IProgressProps, {}> {
                     </span>
                 ) : null}
                 <button className="green" onClick={() => window.open(playerLink)}><FaPlay/></button>
-                <button className="red" onClick={() => cancelTorrent(torrent)}><FaTrash/></button>
+                <button className="red" onClick={() => PeerflixServer.cancelTorrent(torrent)}><FaTrash/></button>
             </div>
         );
     }

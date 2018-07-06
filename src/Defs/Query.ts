@@ -8,6 +8,8 @@ export default class Query {
     public genre : string;
     public sort : string;
     public page : number;
+    public isSearching : boolean;
+    // public updateData: ((torrent: Torrent) => string);
 
     private readonly ENDPOINT : string = "https://tv-v2.api-fetch.website/";
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FaDownload, FaTrash } from 'react-icons/fa';
+import { FaDownload, FaTrash } from 'react-icons/lib/fa';
 
 import './Movie.css';
 import Spinner from './Spinner';
@@ -7,22 +7,20 @@ import Spinner from './Spinner';
 import Movie from '../Defs/Movie';
 import Version from '../Defs/Version';
 
+import PeerflixServer from '../Util/PeerflixServer';
+
 interface IMovieCoverProps {
     openModal : (movie : Movie) => void;
     movie : Movie;
-    downloadTorrent : (version : Version) => void;
-    cancelTorrent : (version : Version) => void;
-    getProgress : (version : Version) => number;
-    started : string[];
 }
 
 class MovieCover extends React.Component<IMovieCoverProps, {}> {
     public render() {
-        const { openModal, movie, downloadTorrent, cancelTorrent, getProgress, started } = this.props;
+        const { openModal, movie } = this.props;
         
         const versions : Version[] = movie.versions;
         for (let version of movie.versions) {
-            version.progress = getProgress(version);
+            version.progress = PeerflixServer.getProgress(version);
         }
 
         return (
@@ -42,15 +40,15 @@ class MovieCover extends React.Component<IMovieCoverProps, {}> {
                                     <button className="red" onClick={(e) => {
                                         e.stopPropagation();
                                         e.nativeEvent.stopImmediatePropagation();
-                                        cancelTorrent(version);
+                                        PeerflixServer.cancelTorrent(version.infoHash);
                                     }}><FaTrash/></button>
                                 ) : (
                                     <button className="orange download" onClick={(e) => {
                                         e.stopPropagation();
                                         e.nativeEvent.stopImmediatePropagation();
-                                        downloadTorrent(version);
+                                            PeerflixServer.downloadTorrent(version);
                                     }}>
-                                        {started.indexOf(version.infoHash) !== -1 ? (
+                                        {PeerflixServer.started.indexOf(version.infoHash) !== -1 ? (
                                             <Spinner visible noMargin button />
                                         ) : (
                                             <FaDownload />

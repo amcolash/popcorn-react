@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DebounceInput } from 'react-debounce-input';
-import { FaClose } from 'react-icons/fa';
+import { FaClose } from 'react-icons/lib/fa';
 
 import Spinner from './Spinner';
 
@@ -8,17 +8,16 @@ import Genre from '../Defs/Genre';
 import Query from '../Defs/Query';
 import Sort from '../Defs/Sort';
 import { Type } from '../Defs/Type';
+import Popcorn from '../Util/Popcorn';
 
 interface ISearchProps {
-    query: Query,
-    isSearching: boolean,
-    updateSearch: (() => void)
+    query : Query
 }
 
 class Search extends React.Component<ISearchProps, {}> {
 
     public render() {
-        const { query, isSearching } = this.props;
+        const query = this.props.query;
         
         const clearVisible =
             query.keywords.length > 0 ||
@@ -72,24 +71,24 @@ class Search extends React.Component<ISearchProps, {}> {
                     <button className="red" style={{display: clearVisible ? "inline" : "none"}} onClick={this.resetQuery}><FaClose /></button>
                 </label>
 
-                <Spinner visible={isSearching} />
+                <Spinner visible={Popcorn.isSearching} />
             </div >
         );
     }
 
-    private updateKeywords = (element : React.FormEvent<HTMLInputElement>) => {
-        this.props.query.keywords = element.currentTarget.value;
-        this.props.updateSearch();
+    private updateKeywords = (element : React.ChangeEvent<HTMLInputElement>) => {
+        this.props.query.keywords = element.target.value;
+        Popcorn.updateData();
     }
 
     private updateGenre = (element : React.FormEvent<HTMLSelectElement>) => {
         this.props.query.genre = element.currentTarget.value;
-        this.props.updateSearch();
+        Popcorn.updateData();
     }
 
     private updateSort = (element : React.FormEvent<HTMLSelectElement>) => {
         this.props.query.sort = element.currentTarget.value;
-        this.props.updateSearch();
+        Popcorn.updateData();
     }
 
     private resetQuery() {

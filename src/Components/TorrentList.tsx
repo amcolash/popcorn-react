@@ -4,35 +4,28 @@ import { FaPlus, FaMinus } from 'react-icons/fa';
 import Torrent from '../Defs/Torrent';
 
 import Progress from './Progress';
-
-interface ITorrentListProps {
-    getLink : ((torrent : Torrent) => string);
-    cancelTorrent : ((torrent : Torrent) => void);
-    torrents : Torrent[];
-}
+import PeerflixServer from '../Util/PeerflixServer';
 
 interface ITorrentListState {
     collapsed : boolean;
 }
 
-class TorrentList extends React.Component<ITorrentListProps, ITorrentListState> {
-    constructor(props : ITorrentListProps) {
+class TorrentList extends React.Component<{}, ITorrentListState> {
+    constructor(props : {}) {
         super(props);
 
         this.state = { collapsed: true };
     }
 
     public render() {
-        const { getLink, cancelTorrent, torrents } = this.props;
-
-        if (torrents.length === 0) {
+        if (PeerflixServer.torrents.length === 0) {
             return null;
         }
 
         return (
             <div className="torrentList">
                 <h3>
-                    <span>Downloads ({torrents.length})</span>
+                    <span>Downloads ({PeerflixServer.torrents.length})</span>
                     <button onClick={this.toggleCollapse}>
                         {this.state.collapsed ? <FaPlus/> : <FaMinus/>}
                     </button>
@@ -40,12 +33,10 @@ class TorrentList extends React.Component<ITorrentListProps, ITorrentListState> 
 
                 {!this.state.collapsed ? (
                     <div>
-                        {(torrents.map(torrent => (
+                        {(PeerflixServer.torrents.map(torrent => (
                             <Progress
                                 key={torrent.infoHash}
                                 torrent={torrent}
-                                getLink={getLink}
-                                cancelTorrent={cancelTorrent}
                                 fullName={false}
                             />
                         )))}

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as React from 'react';
-import { FaDownload, FaCircle, FaPlayCircle } from 'react-icons/fa';
+import { FaDownload, FaPlayCircle } from 'react-icons/lib/fa';
 
 import keys from '../Util/Keys';
 
@@ -11,6 +11,7 @@ import './Details.css';
 
 import Progress from './Progress';
 import Spinner from './Spinner';
+import PeerflixServer from '../Util/PeerflixServer';
 
 interface IDetailsProps {
     movie : Movie;
@@ -37,7 +38,7 @@ class Details extends React.Component<IDetailsProps, IDetailsState> {
     }
 
     public render() {
-        const { movie, downloadTorrent, cancelTorrent, getLink, getVersions, getTorrent, getProgress, started } = this.props;
+        const movie = this.props.movie;
         const moreData = this.state.moreData;
 
         const versions : Version[] = movie.versions;
@@ -46,10 +47,10 @@ class Details extends React.Component<IDetailsProps, IDetailsState> {
             <div className="container">
                 <div className="left">
                     <img src={movie.cover} alt={movie.title}/>
-                    {movie.yt_trailer_code ? (
+                    {movie.trailer ? (
                         <React.Fragment>
                             <br/>
-                            <a href={'https://www.youtube.com/watch?v=' + movie.yt_trailer_code} target="_blank"><FaPlayCircle />Trailer</a>
+                            <a href={'https://www.youtube.com/watch?v=' + movie.trailer} target="_blank"><FaPlayCircle />Trailer</a>
                         </React.Fragment>
                     ) : null}
                 </div>
@@ -107,9 +108,9 @@ class Details extends React.Component<IDetailsProps, IDetailsState> {
                     {versions.map(version => (
                         <div className="version" key={version.url}>
                             <b>{version.quality}</b>
-                            {getProgress(version.infoHash) ? null : (
-                                <button className="orange download" onClick={() => downloadTorrent(version)}>
-                                    {started.indexOf(version.infoHash) !== -1 ? (
+                            {PeerflixServer.getProgress(version.infoHash) ? null : (
+                                <button className="orange download" onClick={() => PeerflixServer.downloadTorrent(version)}>
+                                    {PeerflixServer.started.indexOf(version.infoHash) !== -1 ? (
                                         <Spinner visible={true} noMargin={true} button={true} />
                                     ) : (
                                         <FaDownload/>
@@ -118,11 +119,9 @@ class Details extends React.Component<IDetailsProps, IDetailsState> {
                             )}
                             <span> {version.size}, (Peers: {version.peers}, Seeds: {version.seeds}, Ratio: {version.ratio})</span>
                             <br/>
-                            {getProgress(version.infoHash) ? (
+                            {PeerflixServer.getProgress(version.infoHash) ? (
                                 <Progress
-                                    torrent={getTorrent(version.infoHash)}
-                                    getLink={getLink}
-                                    cancelTorrent={cancelTorrent}
+                                    torrent={PeerflixServer.getTorrent(version.infoHash)}
                                     fullName={true}
                                 />
                             ) : null}
